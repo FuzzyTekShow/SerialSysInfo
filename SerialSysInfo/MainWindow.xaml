@@ -1,0 +1,135 @@
+﻿<Window x:Class="SerialSysInfo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SerialSysInfo" xmlns:tb="http://www.hardcodet.net/taskbar"
+        mc:Ignorable="d"
+        Title="SerialSysInfo" Height="auto" Width="auto" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="False" Icon="ssi_logo.ico" StateChanged="Window_StateChanged" SizeToContent="WidthAndHeight"
+        Closing="Window_Closing">
+
+    <Grid>
+        <!--Grid setup-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5"/>
+        </Grid.RowDefinitions>
+
+        
+        <!--Taskbar tray icon-->
+        <tb:TaskbarIcon IconSource="ssi_logo.ico" x:Name="trayIcon" TrayMouseDoubleClick="conToggle_Click">
+
+            <!-- Set a simple context menu  -->
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu x:Name="conMenu">
+                    <MenuItem x:Name="conToggle" Header="Minimize to tray" Click="conToggle_Click"/>
+                    <MenuItem x:Name="conExit" Header="Exit application" Click="conExit_Click" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+
+        </tb:TaskbarIcon>
+
+
+        <!--Grid Contents-->
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch">
+            <!--Port Area-->
+            <GroupBox Header="Settings">
+
+                <StackPanel Orientation="Vertical">
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label Content="Port:"/>
+                    <ComboBox x:Name="cbPortSelection" Width="65" HorizontalContentAlignment="Center"
+                              VerticalContentAlignment="Center" SelectionChanged="cbPortSelection_SelectionChanged"/>
+                    
+                    <Label Content="Baud Rate:"/>
+                    <TextBox x:Name="tbBaudSelection" Width="60" MaxLength="6" Text="9600"
+                             PreviewTextInput="NumberValidationTextBox"
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Padding="4"/>
+                </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8">
+                        <Label Content="Update frequency (seconds):"/>
+                        <TextBox x:Name="tbUpdateFrequency" Text="1" Width="35" MaxLength="3"
+                                 PreviewTextInput="NumberValidationTextBox"
+                                 TextAlignment="Center" VerticalAlignment="Center" Padding="4"/>
+
+                        <CheckBox x:Name="cbGUIUpdateData" IsChecked="True"
+                                  Content="Update GUI" Margin="10,5,0,5" HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <CheckBox x:Name="cbStartWithWindows" HorizontalAlignment="Center" Margin="4"
+                              Content="Start on boot"/>
+                        <CheckBox x:Name="cbStartMinim" HorizontalAlignment="Center" Margin="4"
+                                  Content="Start minimized"/>
+                    </StackPanel>
+
+                </StackPanel>
+            </GroupBox>
+        
+            <!--Checkbox area-->
+            <GroupBox Header="Metrics Data">
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+
+                    <!--Data Display-->
+                    <StackPanel HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="CPU Temp:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbCPUTemp" Text="----" VerticalAlignment="Center"/>
+                            <Label Content="GPU Temp:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbGPUTemp" Text="----" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="CPU Freq:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbCPUFreq" Text="----" VerticalAlignment="Center"/>
+                            <Label Content="GPU Core:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbGPUFreq" Text="----" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="CPU Usage:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbCPUUsage" Text="----" VerticalAlignment="Center"/>
+                            <Label Content="GPU Memory Freq:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbGPUMemFreq" Text="----" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Label Content="GPU Usage:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbGPUUsage" Text="----" VerticalAlignment="Center"/>
+                            <Label Content="Used RAM:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbRAMUsage" Text="----" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                </StackPanel>
+
+            </GroupBox>
+            
+            <!--Buttons-->
+            <StackPanel>
+                <Button x:Name="btnStartStop" Content="Start sending serial data" Padding="4" Margin="5"
+                        Click="btnStartStop_Click"/>
+
+                <Button x:Name="btnApplyUpdateFrequency" Content="Apply Changes"
+                        Click="btnApplyChanges_Click" Padding="4" Margin="5"/>
+            </StackPanel>
+
+
+        </StackPanel>
+
+    </Grid>
+</Window>
