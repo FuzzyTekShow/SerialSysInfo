@@ -16,9 +16,10 @@ namespace SerialSysInfo
         public static bool UpdateGUI { get; private set; }
         public static bool StartOnBoot { get; private set; }
         public static bool StartMinimized { get; private set; }
+        public static bool StartSerialOnLoad { get; private set; }
 
 
-        public static void SaveSettings(string port, int baud, int updateFrequency, bool updateGUI, bool startOnBoot, bool startMinimized)
+        public static void SaveSettings(string port, int baud, int updateFrequency, bool updateGUI, bool startOnBoot, bool startMinimized, bool startSerialOnLoad)
         {
             Port = port;
             Baud = baud;
@@ -26,6 +27,7 @@ namespace SerialSysInfo
             UpdateGUI = updateGUI;
             StartOnBoot = startOnBoot;
             StartMinimized = startMinimized;
+            StartSerialOnLoad = startSerialOnLoad;
 
             // Set and save the settings
             Properties.Settings.Default.port = Port;
@@ -34,6 +36,7 @@ namespace SerialSysInfo
             Properties.Settings.Default.updateGUI = UpdateGUI;
             Properties.Settings.Default.startMinim = StartMinimized;
             Properties.Settings.Default.startOnBoot = StartOnBoot;
+            Properties.Settings.Default.startSerialOnLoad = StartSerialOnLoad;
 
             Properties.Settings.Default.Save();
         }
@@ -68,6 +71,7 @@ namespace SerialSysInfo
             UpdateGUI = Properties.Settings.Default.updateGUI;
             StartMinimized = Properties.Settings.Default.startMinim;
             StartOnBoot = Properties.Settings.Default.startOnBoot;
+            StartSerialOnLoad = Properties.Settings.Default.startSerialOnLoad;
         }
     }
 }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SerialSysInfo" xmlns:tb="http://www.hardcodet.net/taskbar"
         mc:Ignorable="d"
         Title="SerialSysInfo" Height="auto" Width="auto" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
-        ShowInTaskbar="False" Icon="ssi_logo.ico" StateChanged="Window_StateChanged" SizeToContent="WidthAndHeight"
+        Icon="ssi_logo.ico" StateChanged="Window_StateChanged" SizeToContent="WidthAndHeight"
         Closing="Window_Closing">
 
     <Grid>
@@ -25,12 +25,11 @@
 
         
         <!--Taskbar tray icon-->
-        <tb:TaskbarIcon IconSource="ssi_logo.ico" x:Name="trayIcon" TrayMouseDoubleClick="conToggle_Click">
+        <tb:TaskbarIcon IconSource="ssi_logo.ico" x:Name="trayIcon" TrayMouseDoubleClick="conNormalWindow_Click">
 
             <!-- Set a simple context menu  -->
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu x:Name="conMenu">
-                    <MenuItem x:Name="conToggle" Header="Minimize to tray" Click="conToggle_Click"/>
                     <MenuItem x:Name="conExit" Header="Exit application" Click="conExit_Click" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
@@ -49,7 +48,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label Content="Port:"/>
                     <ComboBox x:Name="cbPortSelection" Width="65" HorizontalContentAlignment="Center"
-                              VerticalContentAlignment="Center" SelectionChanged="cbPortSelection_SelectionChanged"/>
+                              VerticalContentAlignment="Center"/>
                     
                     <Label Content="Baud Rate:"/>
                     <TextBox x:Name="tbBaudSelection" Width="60" MaxLength="6" Text="9600"
@@ -74,6 +73,8 @@
                               Content="Start on boot"/>
                         <CheckBox x:Name="cbStartMinim" HorizontalAlignment="Center" Margin="4"
                                   Content="Start minimized"/>
+                        <CheckBox x:Name="cbStartSerial" HorizontalAlignment="Center" Margin="4"
+                                  Content="Start serial on load"/>
                     </StackPanel>
 
                 </StackPanel>
@@ -86,31 +87,29 @@
 
                     <!--Data Display-->
                     <StackPanel HorizontalAlignment="Center">
+                        
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Label Content="CPU Temp:" FontWeight="Bold"/>
                             <TextBlock x:Name="tbCPUTemp" Text="----" VerticalAlignment="Center"/>
-                            <Label Content="GPU Temp:" FontWeight="Bold"/>
-                            <TextBlock x:Name="tbGPUTemp" Text="----" VerticalAlignment="Center"/>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Label Content="CPU Freq:" FontWeight="Bold"/>
                             <TextBlock x:Name="tbCPUFreq" Text="----" VerticalAlignment="Center"/>
-                            <Label Content="GPU Core:" FontWeight="Bold"/>
-                            <TextBlock x:Name="tbGPUFreq" Text="----" VerticalAlignment="Center"/>
+                            <Label Content="CPU Usage:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbCPUUsage" Text="----" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Label Content="CPU Usage:" FontWeight="Bold"/>
-                            <TextBlock x:Name="tbCPUUsage" Text="----" VerticalAlignment="Center"/>
-                            <Label Content="GPU Memory Freq:" FontWeight="Bold"/>
+                            <Label Content="GPU Temp:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbGPUTemp" Text="----" VerticalAlignment="Center"/>
+                            <Label Content="GPU Core:" FontWeight="Bold"/>
+                            <TextBlock x:Name="tbGPUFreq" Text="----" VerticalAlignment="Center"/>
+                            <Label Content="GPU Mem:" FontWeight="Bold"/>
                             <TextBlock x:Name="tbGPUMemFreq" Text="----" VerticalAlignment="Center"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Label Content="GPU Usage:" FontWeight="Bold"/>
                             <TextBlock x:Name="tbGPUUsage" Text="----" VerticalAlignment="Center"/>
-                            <Label Content="Used RAM:" FontWeight="Bold"/>
+                            <Label Content="RAM Usage:" FontWeight="Bold"/>
                             <TextBlock x:Name="tbRAMUsage" Text="----" VerticalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
@@ -124,8 +123,16 @@
                 <Button x:Name="btnStartStop" Content="Start sending serial data" Padding="4" Margin="5"
                         Click="btnStartStop_Click"/>
 
-                <Button x:Name="btnApplyUpdateFrequency" Content="Apply Changes"
+                <Button x:Name="btnApplyUpdateFrequency" Content="Save &amp; Apply Changes"
                         Click="btnApplyChanges_Click" Padding="4" Margin="5"/>
+
+                <DockPanel HorizontalAlignment="Stretch">
+                    <Button x:Name="btnMinimize" Content="Minimize to tray"
+                        Click="btnMinimize_Click" Padding="4" Margin="5" MinWidth="200" HorizontalAlignment="Stretch"/>
+                    <Button x:Name="btnExit" Content="Exit Application"
+                        Click="conExit_Click" Padding="4" Margin="5" MaxWidth="200" HorizontalAlignment="Stretch"/>
+                </DockPanel>
+
             </StackPanel>
 
 

@@ -94,5 +94,17 @@ namespace SerialSysInfo.Properties {
                 this["startMinim"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool startSerialOnLoad {
+            get {
+                return ((bool)(this["startSerialOnLoad"]));
+            }
+            set {
+                this["startSerialOnLoad"] = value;
+            }
+        }
     }
 }

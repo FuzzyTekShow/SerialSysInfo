@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -141,17 +142,24 @@ namespace SerialSysInfo
             // 7 = Used RAM
             // 8 = Total RAM
             // 9 = RAM Percentage
+            //10 = Time (00:00)
+            //11 = Day&Date (MON27)
 
-            serialData.Add(CPUTemp.ToString());
-            serialData.Add(GPUTemp.ToString());
-            serialData.Add(CPUFreq.ToString());
-            serialData.Add(GPUCoreFreq.ToString());
-            serialData.Add(GPUMemFreq.ToString());
-            serialData.Add(CPUUsage.ToString());
-            serialData.Add(GPUUsage.ToString());
-            serialData.Add(RAMUsed.ToString());
-            serialData.Add(RAMTotal.ToString());
-            serialData.Add(RAMFreePercentage.ToString());
+            // Clear the list
+            serialData.Clear();
+
+            serialData.Add(CPUTemp.ToString(new CultureInfo("en-US")));
+            serialData.Add(GPUTemp.ToString(new CultureInfo("en-US")));
+            serialData.Add(CPUFreq.ToString(new CultureInfo("en-US")));
+            serialData.Add(GPUCoreFreq.ToString(new CultureInfo("en-US")));
+            serialData.Add(GPUMemFreq.ToString(new CultureInfo("en-US")));
+            serialData.Add(CPUUsage.ToString(new CultureInfo("en-US")));
+            serialData.Add(GPUUsage.ToString(new CultureInfo("en-US")));
+            serialData.Add(RAMUsed.ToString(new CultureInfo("en-US")));
+            serialData.Add(RAMTotal.ToString(new CultureInfo("en-US")));
+            serialData.Add(RAMFreePercentage.ToString(new CultureInfo("en-US")));
+            serialData.Add(DateTime.Now.ToString("t"));
+            serialData.Add($"{DateTime.Now.Date.ToString("ddd").ToUpper()} {DateTime.Now.Date:dd} {DateTime.Now.Date.ToString("MMM").ToUpper()}");
 
             return serialData;
         }

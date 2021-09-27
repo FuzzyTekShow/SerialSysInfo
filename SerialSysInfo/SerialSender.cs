@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
+using System.Threading.Tasks;
 
 namespace SerialSysInfo
 {
@@ -46,28 +48,34 @@ namespace SerialSysInfo
             }
         }
 
+
         /// <summary>
         /// Send data to the serial device
         /// </summary>
         /// <param name="data">The data to send</param>
-        public static void SendData(List<string> data)
+        public static string SendData(List<string> data)
         {
             string dataToSend = string.Empty;
-
+            
             foreach (string metric in data)
             {
+                dataToSend += metric + "|";
                 if (data[data.Count - 1] == metric)
                 {
-                    dataToSend += metric;
-                }
-                else
-                {
-                    dataToSend += metric + "|";
+                    dataToSend += "\n";
                 }
             }
 
             // Send the data
-            serialPort.Write($"0x00{dataToSend}0x01");
+            try
+            {
+                serialPort.Write(dataToSend);
+                return "ok";
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
     }
 }
