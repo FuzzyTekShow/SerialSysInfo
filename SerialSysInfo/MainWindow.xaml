@@ -17,7 +17,8 @@
             <ColumnDefinition Width="5"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="5"/>
+            <RowDefinition Height="2"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="5"/>
@@ -35,11 +36,40 @@
             </tb:TaskbarIcon.ContextMenu>
 
         </tb:TaskbarIcon>
+        
+        <!--Top Menu Bar-->
+        <Menu Grid.Row="1" Grid.Column="1">
+            <MenuItem Header="_File">
+                <MenuItem Header="Minimize to tray" Click="btnMinimize_Click"/>
+                <Separator/>
+                <MenuItem Header="Exit" Click="conExit_Click"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Help">
+                <MenuItem x:Name="menuGuide" Header="View help guide" Click="menuGuide_Click"/>
+                <Separator/>
+                <MenuItem x:Name="menuAbout" Header="About" Click="menuAbout_Click"/>
+            </MenuItem>
+        </Menu>
+        
+        <!--Bottom status bar-->
+        <StatusBar Grid.Row="3" Grid.Column="1">
+            <StatusBarItem>
+                <TextBlock Text="Status:"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="tbStatusBarConnectionStatus" Text="Idle" Foreground="SlateBlue"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <TextBlock x:Name="tbStatusBarVersionInformation" Foreground="DarkGray"/>
+            </StatusBarItem>
+        </StatusBar>
+
 
 
         <!--Grid Contents-->
 
-        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch">
             <!--Port Area-->
             <GroupBox Header="Settings">
 

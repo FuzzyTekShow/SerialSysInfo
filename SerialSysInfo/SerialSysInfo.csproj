@@ -81,10 +81,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="About.xaml.cs">
+      <DependentUpon>About.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MetricData.cs" />
     <Compile Include="SerialSender.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SystemInfo.cs" />
+    <Page Include="About.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -127,7 +134,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ssi_logo.png" />
+    <Resource Include="ssi_logo.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ssi_logo.ico" />

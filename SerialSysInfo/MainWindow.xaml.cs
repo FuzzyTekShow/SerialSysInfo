@@ -8,6 +8,9 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.ComponentModel;
+using System.Reflection;
+using System.Diagnostics;
+using System.Windows.Media;
 
 namespace SerialSysInfo
 {
@@ -16,6 +19,8 @@ namespace SerialSysInfo
     /// </summary>
     public partial class MainWindow : Window
     {
+        string version = $"v{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
+        string websiteLink = "https://serialsysinfo.fuzzytek.ml";
 
         TaskbarIcon tbi;
         MetricData md;
@@ -23,22 +28,24 @@ namespace SerialSysInfo
 
         private bool isConnected = false;
 
+
         public MainWindow()
         {
             InitializeComponent();
+            InitGUI();
             InitSettings();
             InitTrayIcon();
             InitSerialPorts();
+            InitMetrics();
+        }
 
-            md = new MetricData();
-            serialWorker = new BackgroundWorker
-            {
-                WorkerSupportsCancellation = true,
-                WorkerReportsProgress = true
-            };
-            serialWorker.DoWork += SerialWorker_DoWork;
-            serialWorker.ProgressChanged += SerialWorker_ProgressChanged;
-            StartMetrics();
+
+        /// <summary>
+        /// Sets up the window
+        /// </summary>
+        private void InitGUI()
+        {
+            tbStatusBarVersionInformation.Text = version;
         }
 
 
@@ -60,13 +67,30 @@ namespace SerialSysInfo
 
             if (Settings.StartMinimized)
             {
-                this.WindowState = WindowState.Minimized;
+                this.Hide();
             }
 
             if (Settings.StartSerialOnLoad)
             {
                 StartSerialConnection();
             }
+        }
+
+
+        /// <summary>
+        /// Initialise the metrics
+        /// </summary>
+        private void InitMetrics()
+        {
+            md = new MetricData();
+            serialWorker = new BackgroundWorker
+            {
+                WorkerSupportsCancellation = true,
+                WorkerReportsProgress = true
+            };
+            serialWorker.DoWork += SerialWorker_DoWork;
+            serialWorker.ProgressChanged += SerialWorker_ProgressChanged;
+            StartMetrics();
         }
 
 
@@ -80,7 +104,6 @@ namespace SerialSysInfo
                 serialWorker.RunWorkerAsync();
             }
         }
-
 
 
         /// <summary>
@@ -123,6 +146,19 @@ namespace SerialSysInfo
 
         private void SerialWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+
+            if (isConnected)
+            {
+                tbStatusBarConnectionStatus.Text = "Sending data";
+                tbStatusBarConnectionStatus.Foreground = new SolidColorBrush(Colors.Green);
+            }
+            else
+            {
+                tbStatusBarConnectionStatus.Text = "Idle";
+                tbStatusBarConnectionStatus.Foreground = new SolidColorBrush(Colors.SlateBlue);
+            }
+
+
             if (Settings.UpdateGUI)
             {
                 string ramUsedSuffix = string.Empty;
@@ -276,9 +312,6 @@ namespace SerialSysInfo
                 (bool)cbGUIUpdateData.IsChecked, (bool)cbStartWithWindows.IsChecked,
                 (bool)cbStartMinim.IsChecked, (bool)cbStartSerial.IsChecked);
 
-            MessageBox.Show($"Settings saved.",
-                        "Settings", MessageBoxButton.OK, MessageBoxImage.Information);
-
             // Set the GUI data to blank if not to be shown
             if (!Settings.UpdateGUI)
             {
@@ -286,6 +319,20 @@ namespace SerialSysInfo
                     tbGPUFreq.Text = tbGPUMemFreq.Text = tbRAMUsage.Text =
                     tbGPUUsage.Text = tbCPUUsage.Text = "----";
             }
+
+            // Enable or disable on startup
+            if (Settings.StartOnBoot)
+            {
+                Settings.EnableStartOnBoot();
+            }
+            else
+            {
+                Settings.DisableStartOnBoot();
+            }
+
+            // Show settings saved message
+            MessageBox.Show($"Settings saved.",
+                        "Settings", MessageBoxButton.OK, MessageBoxImage.Information);
 
 
         }
@@ -406,5 +453,22 @@ namespace SerialSysInfo
         }
 
         #endregion
+
+
+        /// <summary>
+        /// Called when the "About" menu item is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            About about = new About();
+            about.Show();
+        }
+
+        private void menuGuide_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo($"{websiteLink}/guide"));
+        }
     }
 }
