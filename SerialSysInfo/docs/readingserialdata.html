@@ -1,0 +1,18 @@
+<h1>Reading the Serial Data</h1>
+The data sent from the application to the serial device is in the following format:
+<br><br>
+<code>CPUTEMP|GPUTEMP|CPUCOREFREQUENCY|GPUCOREFREQUENCY|GPUMEMFREQUENCY|CPULOADPERCENTAGE|GPULOADPERCENTAGE|USERAM|TOTALRAM|USEDRAMPERCENTAGE|CURRENTIME|CURRENTDAYCURRENTMONTH|</code>
+<br><br>
+Here is an example of real world serial data colour coded for reading convenience:
+<br><br>
+<strong>
+<span style="color:Tomato;">56.75</span>|<span style="color:forestgreen;">43</span>|<span style="color:blueviolet;">3680.018</span>|<span style="color:blue;">1252.573</span>|<span style="color:red;">3610.272</span>|<span style="color:darkblue;">8.333333</span>|<span style="color:tan;">11.36697</span>|<span style="color:hotpink;">6.777683</span>|<span style="color:indigo;">15.92783</span>|<span style="color:yellowgreen;">42.55247</span>|<span style="color:coral;">16:58</span>|<span style="color:saddlebrown;">Mon27</span>|
+<br><br>
+<span style="color:tomato;">CPU Temp</span>|<span style="color:forestgreen;">GPU Temp</span>|<span style="color:blueviolet;">CPU Freq</span>|<span style="color:blue;">GPU Core</span>|<span style="color:red;">GPU Mem Freq</span>|<span style="color:darkblue;">CPU Load Percentage</span>|<span style="color:tan;">GPU Load Percentage</span>|<span style="color:hotpink;">Used RAM</span>|<span style="color:indigo;">Total RAM</span>|<span style="color:yellowgreen;">RAM Percentage</span>|<span style="color:coral;">Time (00:00)</span>|<span style="color:saddlebrown;">Day & Date (DAY00)</span>|
+</strong>
+<br><br>
+The vertical pipe ("|") character is used to indicate the end of a part of data.
+<br>
+The received data can then be manipulated in any way you wish.
+<br>
+For example the CPU Frequency of "3680.018" from above could be converted from Mhz to Ghz, the CPU temperature could be displayed to only 1 decimal and so on.

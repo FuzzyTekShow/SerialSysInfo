@@ -3,14 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Reflection;
 using System.Diagnostics;
-using System.Windows.Media;
 
 namespace SerialSysInfo
 {
@@ -19,12 +17,11 @@ namespace SerialSysInfo
     /// </summary>
     public partial class MainWindow : Window
     {
-        string version = $"v{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
-        string websiteLink = "https://serialsysinfo.fuzzytek.ml";
-
-        TaskbarIcon tbi;
-        MetricData md;
-        BackgroundWorker serialWorker;
+        private readonly string version = $"v{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
+        private readonly string websiteLink = "https://github.com/fuzzytekshow/serialsysinfo";
+        private TaskbarIcon tbi;
+        private MetricData md;
+        private BackgroundWorker serialWorker;
 
         private bool isConnected = false;
 
@@ -32,20 +29,10 @@ namespace SerialSysInfo
         public MainWindow()
         {
             InitializeComponent();
-            InitGUI();
             InitSettings();
             InitTrayIcon();
             InitSerialPorts();
             InitMetrics();
-        }
-
-
-        /// <summary>
-        /// Sets up the window
-        /// </summary>
-        private void InitGUI()
-        {
-            tbStatusBarVersionInformation.Text = version;
         }
 
 
@@ -67,7 +54,7 @@ namespace SerialSysInfo
 
             if (Settings.StartMinimized)
             {
-                this.Hide();
+                Hide();
             }
 
             if (Settings.StartSerialOnLoad)
@@ -89,8 +76,6 @@ namespace SerialSysInfo
                 WorkerReportsProgress = true
             };
             serialWorker.DoWork += SerialWorker_DoWork;
-            serialWorker.ProgressChanged += SerialWorker_ProgressChanged;
-            StartMetrics();
         }
 
 
@@ -99,10 +84,12 @@ namespace SerialSysInfo
         /// </summary>
         private void StartMetrics()
         {
-            if (serialWorker.IsBusy != true)
+            if (serialWorker.IsBusy)
             {
-                serialWorker.RunWorkerAsync();
+                serialWorker.CancelAsync();
+                while (serialWorker.IsBusy) { }
             }
+            serialWorker.RunWorkerAsync();
         }
 
 
@@ -113,96 +100,78 @@ namespace SerialSysInfo
         private void SerialWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
 
-            // Repeat
+            while (!worker.CancellationPending)
+            {
+                md.GetMetricData();
+                    
+                // Update the GUI if set to do it
+                if (Settings.UpdateGUI)
+                {
+                    Dispatcher.Invoke(UpdateGUI);
+                }
+                    
+                // If serial is connected send the data
+                bool dataSent = false;
+                if (isConnected && !dataSent)
+                {
+                    SendSerialData();
+                    dataSent = true;
+                }
+
+                // If not about to cancel, wait for update frequency
+                if (!worker.CancellationPending)
+                {
+                    System.Threading.Thread.Sleep(Settings.UpdateFrequency * 1000);
+                }
+            }
+
             if (worker.CancellationPending)
             {
                 e.Cancel = true;
-                return;
-            }
-            else
-            {
-                while (!worker.CancellationPending)
-                {
-                    md.GetMetricData();
-
-                    Random rand = new Random();
-                    worker.ReportProgress(rand.Next(0, 100));
-
-                    // If serial is connected send the data
-                    bool dataSent = false;
-                    if (isConnected && !dataSent)
-                    {
-                        SendSerialData();
-                        dataSent = true;
-                    }
-
-                    System.Threading.Thread.Sleep(Settings.UpdateFrequency * 1000);
-                    dataSent = false;
-                }
             }
         }
 
 
-        private void SerialWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        /// <summary>
+        /// When the worker stops
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
-            if (isConnected)
-            {
-                tbStatusBarConnectionStatus.Text = "Sending data";
-                tbStatusBarConnectionStatus.Foreground = new SolidColorBrush(Colors.Green);
-            }
-            else
-            {
-                tbStatusBarConnectionStatus.Text = "Idle";
-                tbStatusBarConnectionStatus.Foreground = new SolidColorBrush(Colors.SlateBlue);
-            }
+            ClearGUIData();
+            // Reset the connection button text
+            btnStartStop.Content = "Start sending serial data";
+        }
 
 
-            if (Settings.UpdateGUI)
-            {
-                string ramUsedSuffix = string.Empty;
-                string ramTotalSuffix = string.Empty;
+        private void UpdateGUI()
+        {
+            //Temperature
+            tbCPUTemp.Text = $"{md.CPUTemp:0.0}°c";
+            tbGPUTemp.Text = $"{md.GPUTemp:0.0}°c";
 
-                //Temperature
-                tbCPUTemp.Text = $"{md.CPUTemp:0.0}°c";
-                tbGPUTemp.Text = $"{md.GPUTemp:0.0}°c";
+            // CPU Load Percentage
+            tbCPUUsage.Text = $"{md.CPUUsage:0}%";
+            // GPU Load Percentage
+            tbGPUUsage.Text = $"{md.GPUUsage:0}%";
 
-                // CPU Load Percentage
-                tbCPUUsage.Text = $"{md.CPUUsage:0}%";
-                // GPU Load Percentage
-                tbGPUUsage.Text = $"{md.GPUUsage:0}%";
+            // Frequency
 
-                // Frequency
+            // CPU
+            tbCPUFreq.Text = md.CPUFreq / 1000 > 0 ? $"{md.CPUFreq / 1000:0.00} Ghz" : $"{md.CPUFreq:0.00} Mhz";
+            // GPU Core
+            tbGPUFreq.Text = md.GPUCoreFreq / 1000 > 0 ? $"{md.GPUCoreFreq / 1000:0.00} Ghz" : $"{md.GPUCoreFreq:0.00} Mhz";
+            // GPU Mem
+            tbGPUMemFreq.Text = md.GPUMemFreq / 1000 > 0 ? $"{md.GPUMemFreq / 1000:0.00} Ghz" : $"{md.GPUMemFreq:0.00} Mhz";
 
-                // CPU
-                if (md.CPUFreq / 1000 > 0)
-                    tbCPUFreq.Text = $"{md.CPUFreq / 1000:0.00} Ghz";
-                else
-                    tbCPUFreq.Text = $"{md.CPUFreq:0.00} Mhz";
-                // GPU Core
-                if (md.GPUCoreFreq / 1000 > 0)
-                    tbGPUFreq.Text = $"{md.GPUCoreFreq / 1000:0.00} Ghz";
-                else
-                    tbGPUFreq.Text = $"{md.GPUCoreFreq:0.00} Mhz";
-                // GPU Mem
-                if (md.GPUMemFreq / 1000 > 0)
-                    tbGPUMemFreq.Text = $"{md.GPUMemFreq / 1000:0.00} Ghz";
-                else
-                    tbGPUMemFreq.Text = $"{md.GPUMemFreq:0.00} Mhz";
+            // RAM
+            string ramUsedSuffix = md.RAMUsed / 1000 > 0 ? "GB" : "MB";
+            string ramTotalSuffix = md.RAMTotal / 1000 > 0 ? "GB" : "MB";
 
-                // RAM
-                if (md.RAMUsed / 1000 > 0)
-                    ramUsedSuffix = "GB";
-                else
-                    ramUsedSuffix = "MB";
-                if (md.RAMTotal / 1000 > 0)
-                    ramTotalSuffix = "GB";
-                else
-                    ramTotalSuffix = "MB";
-
-                tbRAMUsage.Text = $"{md.RAMUsed:0.00} {ramUsedSuffix} / {md.RAMTotal:0.00} {ramTotalSuffix} ({md.RAMFreePercentage:#}%)";
-            }
+            tbRAMUsage.Text = $"{md.RAMUsed:0.00} {ramUsedSuffix} / {md.RAMTotal:0.00} {ramTotalSuffix} ({md.RAMFreePercentage:#}%)";
         }
 
 
@@ -258,7 +227,7 @@ namespace SerialSysInfo
         private void InitTrayIcon()
         {
             tbi = trayIcon;
-            tbi.ToolTipText = this.Title;
+            tbi.ToolTipText = Title;
         }
 
 
@@ -270,15 +239,15 @@ namespace SerialSysInfo
         private void Window_StateChanged(object sender, System.EventArgs e)
         {
             // If window was minimised
-            if (this.WindowState == WindowState.Minimized)
+            if (WindowState == WindowState.Minimized)
             {
                 // Show balloon message
                 tbi.ShowBalloonTip(Title, "SerialSysInfo is now running in the background.", BalloonIcon.Info);
-                this.Hide();
+                Hide();
             }
-            else if (this.WindowState == WindowState.Normal)
+            else if (WindowState == WindowState.Normal)
             {
-                this.Show();
+                Show();
             }
         }
 
@@ -292,7 +261,7 @@ namespace SerialSysInfo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnStartStop_Click(object sender, RoutedEventArgs e)
+        private void BtnStartStop_Click(object sender, RoutedEventArgs e)
         {
             StartSerialConnection();
         }
@@ -303,7 +272,7 @@ namespace SerialSysInfo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnApplyChanges_Click(object sender, RoutedEventArgs e)
+        private void BtnApplyChanges_Click(object sender, RoutedEventArgs e)
         {
 
             // Save the settings
@@ -315,9 +284,7 @@ namespace SerialSysInfo
             // Set the GUI data to blank if not to be shown
             if (!Settings.UpdateGUI)
             {
-                tbCPUTemp.Text = tbGPUTemp.Text = tbCPUFreq.Text =
-                    tbGPUFreq.Text = tbGPUMemFreq.Text = tbRAMUsage.Text =
-                    tbGPUUsage.Text = tbCPUUsage.Text = "----";
+                ClearGUIData();
             }
 
             // Enable or disable on startup
@@ -331,7 +298,7 @@ namespace SerialSysInfo
             }
 
             // Show settings saved message
-            MessageBox.Show($"Settings saved.",
+            _ = MessageBox.Show($"Settings saved.",
                         "Settings", MessageBoxButton.OK, MessageBoxImage.Information);
 
 
@@ -343,7 +310,7 @@ namespace SerialSysInfo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnMinimize_Click(object sender, RoutedEventArgs e)
+        private void BtnMinimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }
@@ -355,7 +322,7 @@ namespace SerialSysInfo
 
         private void conExit_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
 
@@ -366,14 +333,14 @@ namespace SerialSysInfo
         /// <param name="e"></param>
         private void conNormalWindow_Click(object sender, RoutedEventArgs e)
         {
-            if (this.Visibility == Visibility.Hidden)
+            if (Visibility == Visibility.Hidden)
             {
-                this.Visibility = Visibility.Visible;
-                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                Visibility = Visibility.Visible;
+                _ = Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                     new Action(delegate ()
                     {
-                        this.WindowState = WindowState.Normal;
-                        this.Activate();
+                        WindowState = WindowState.Normal;
+                        _ = Activate();
                     })
                 );
             }
@@ -394,10 +361,47 @@ namespace SerialSysInfo
 
             if (sender != "ok")
             {
-                MessageBox.Show($"An error occured. {sender}",
+                _ = MessageBox.Show($"An error occured. {sender}",
                         "Serial Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                serialWorker.CancelAsync();
+                SerialSender.Disconnect();
+                isConnected = false;
                 return;
             }
+        }
+
+
+
+        /// <summary>
+        /// Clears the GUI data area
+        /// </summary>
+        private void ClearGUIData()
+        {
+            tbCPUTemp.Text = tbGPUTemp.Text = tbCPUFreq.Text =
+                    tbGPUFreq.Text = tbGPUMemFreq.Text = tbRAMUsage.Text =
+                    tbGPUUsage.Text = tbCPUUsage.Text = "----";
+        }
+
+
+        /// <summary>
+        /// Detect window keypresses
+        /// </summary>
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // CHM Help file
+            if (e.Key == Key.F1)
+            {
+                ShowHelp();
+            }
+        }
+
+
+        /// <summary>
+        /// Shows the help file
+        /// </summary>
+        private void ShowHelp()
+        {
+            Process.Start(@"help.chm");
         }
 
 
@@ -412,18 +416,24 @@ namespace SerialSysInfo
 
                 if (connResult == "True")
                 {
+                    StartMetrics();
                     btnStartStop.Content = "Stop sending serial data";
                     isConnected = true;
                 }
                 else
                 {
-                    MessageBox.Show($"An error occured. {connResult}",
+                    _ = MessageBox.Show($"An error occured. {connResult}",
                         "Serial Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
             }
             else
             {
+                if (serialWorker.IsBusy)
+                {
+                    serialWorker.CancelAsync();
+                }
+
                 btnStartStop.Content = "Connect to serial device";
                 isConnected = false;
                 SerialSender.Disconnect();
@@ -460,15 +470,21 @@ namespace SerialSysInfo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void menuAbout_Click(object sender, RoutedEventArgs e)
+        private void MenuAbout_Click(object sender, RoutedEventArgs e)
         {
             About about = new About();
             about.Show();
         }
 
-        private void menuGuide_Click(object sender, RoutedEventArgs e)
+
+        /// <summary>
+        /// Called when the HELP menu item is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuGuide_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo($"{websiteLink}/guide"));
+            ShowHelp();
         }
     }
 }

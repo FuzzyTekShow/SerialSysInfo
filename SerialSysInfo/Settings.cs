@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SerialSysInfo
 {
@@ -22,8 +19,8 @@ namespace SerialSysInfo
         public static bool StartSerialOnLoad { get; private set; }
 
         // Shortcut stuff
-        private static string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-        private static string app = Assembly.GetExecutingAssembly().Location;
+        private static readonly string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+        private static readonly string app = Assembly.GetExecutingAssembly().Location;
 
 
         /// <summary>

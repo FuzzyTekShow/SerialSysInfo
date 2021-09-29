@@ -22,7 +22,8 @@ namespace SerialSysInfo
             serialPort = new SerialPort
             {
                 PortName = port,
-                BaudRate = baud
+                BaudRate = baud,
+                WriteTimeout = 1000
             };
 
             try

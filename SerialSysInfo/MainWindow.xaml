@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="SerialSysInfo" Height="auto" Width="auto" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Icon="ssi_logo.ico" StateChanged="Window_StateChanged" SizeToContent="WidthAndHeight"
-        Closing="Window_Closing">
+        Closing="Window_Closing" KeyDown="Window_KeyDown">
 
     <Grid>
         <!--Grid setup-->
@@ -31,7 +31,7 @@
             <!-- Set a simple context menu  -->
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu x:Name="conMenu">
-                    <MenuItem x:Name="conExit" Header="Exit application" Click="conExit_Click" />
+                    <MenuItem x:Name="conExit" Header="Exit application" Click="conExit_Click" ToolTip="Closes the application" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
 
@@ -40,31 +40,17 @@
         <!--Top Menu Bar-->
         <Menu Grid.Row="1" Grid.Column="1">
             <MenuItem Header="_File">
-                <MenuItem Header="Minimize to tray" Click="btnMinimize_Click"/>
+                <MenuItem Header="Minimize to tray" Click="BtnMinimize_Click" ToolTip="Minimizes the application to the taskbar tray"/>
                 <Separator/>
-                <MenuItem Header="Exit" Click="conExit_Click"/>
+                <MenuItem Header="Exit" Click="conExit_Click" ToolTip="Closes the application" InputGestureText="Alt+F4"/>
             </MenuItem>
             
             <MenuItem Header="_Help">
-                <MenuItem x:Name="menuGuide" Header="View help guide" Click="menuGuide_Click"/>
+                <MenuItem x:Name="menuGuide" Header="View Help" Click="MenuGuide_Click" ToolTip="View the help file" InputGestureText="F1"/>
                 <Separator/>
-                <MenuItem x:Name="menuAbout" Header="About" Click="menuAbout_Click"/>
+                <MenuItem x:Name="menuAbout" Header="About" Click="MenuAbout_Click" ToolTip="View information about this application"/>
             </MenuItem>
         </Menu>
-        
-        <!--Bottom status bar-->
-        <StatusBar Grid.Row="3" Grid.Column="1">
-            <StatusBarItem>
-                <TextBlock Text="Status:"/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock x:Name="tbStatusBarConnectionStatus" Text="Idle" Foreground="SlateBlue"/>
-            </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock x:Name="tbStatusBarVersionInformation" Foreground="DarkGray"/>
-            </StatusBarItem>
-        </StatusBar>
-
 
 
         <!--Grid Contents-->
@@ -88,7 +74,7 @@
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="8">
                         <Label Content="Update frequency (seconds):"/>
-                        <TextBox x:Name="tbUpdateFrequency" Text="1" Width="35" MaxLength="3"
+                        <TextBox x:Name="tbUpdateFrequency" Text="5" Width="35" MaxLength="3"
                                  PreviewTextInput="NumberValidationTextBox"
                                  TextAlignment="Center" VerticalAlignment="Center" Padding="4"/>
 
@@ -151,14 +137,14 @@
             <!--Buttons-->
             <StackPanel>
                 <Button x:Name="btnStartStop" Content="Start sending serial data" Padding="4" Margin="5"
-                        Click="btnStartStop_Click"/>
+                        Click="BtnStartStop_Click"/>
 
                 <Button x:Name="btnApplyUpdateFrequency" Content="Save &amp; Apply Changes"
-                        Click="btnApplyChanges_Click" Padding="4" Margin="5"/>
+                        Click="BtnApplyChanges_Click" Padding="4" Margin="5"/>
 
                 <DockPanel HorizontalAlignment="Stretch">
                     <Button x:Name="btnMinimize" Content="Minimize to tray"
-                        Click="btnMinimize_Click" Padding="4" Margin="5" MinWidth="200" HorizontalAlignment="Stretch"/>
+                        Click="BtnMinimize_Click" Padding="4" Margin="5" MinWidth="200" HorizontalAlignment="Stretch"/>
                     <Button x:Name="btnExit" Content="Exit Application"
                         Click="conExit_Click" Padding="4" Margin="5" MaxWidth="200" HorizontalAlignment="Stretch"/>
                 </DockPanel>

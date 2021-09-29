@@ -1,0 +1,19 @@
+Microsoft HTML Help Compiler 4.74.8702
+
+Compiling c:\Users\Fuzzy\source\repos\SerialSysInfo\SerialSysInfo\docs\help.chm
+
+index.html
+thegui.html
+readingserialdata.html
+contribution.html
+screenshot1.jpg
+
+Compile time: 0 minutes, 0 seconds
+4	Topics
+7	Local links
+0	Internet links
+1	Graphic
+
+
+Created c:\Users\Fuzzy\source\repos\SerialSysInfo\SerialSysInfo\docs\help.chm, 40,309 bytes
+Compression increased file by 2,813 bytes.
