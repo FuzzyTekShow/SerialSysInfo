@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("SerialSysInfo")]
 [assembly: AssemblyDescription("Send system information over a serial connection")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DRRN")]
+[assembly: AssemblyCompany("FuzzyTek")]
 [assembly: AssemblyProduct("SerialSysInfo")]
-[assembly: AssemblyCopyright("Copyright © DRRN 2021")]
+[assembly: AssemblyCopyright("Copyright © FuzzyTek 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

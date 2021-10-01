@@ -6,14 +6,15 @@ index.html
 thegui.html
 readingserialdata.html
 contribution.html
+ssi_logo.png
 screenshot1.jpg
 
 Compile time: 0 minutes, 0 seconds
 4	Topics
 7	Local links
 0	Internet links
-1	Graphic
+2	Graphics
 
 
-Created c:\Users\Fuzzy\source\repos\SerialSysInfo\SerialSysInfo\docs\help.chm, 40,309 bytes
-Compression increased file by 2,813 bytes.
+Created c:\Users\Fuzzy\source\repos\SerialSysInfo\SerialSysInfo\docs\help.chm, 44,055 bytes
+Compression increased file by 2,681 bytes.

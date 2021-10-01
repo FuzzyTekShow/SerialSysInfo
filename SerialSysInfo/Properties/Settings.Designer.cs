@@ -49,7 +49,7 @@ namespace SerialSysInfo.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int updateFrequency {
             get {
                 return ((int)(this["updateFrequency"]));
@@ -73,7 +73,7 @@ namespace SerialSysInfo.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool startOnBoot {
             get {
                 return ((bool)(this["startOnBoot"]));

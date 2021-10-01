@@ -9,13 +9,13 @@
       <Value Profile="(Default)">9600</Value>
     </Setting>
     <Setting Name="updateFrequency" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="updateGUI" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="startOnBoot" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="startMinim" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
