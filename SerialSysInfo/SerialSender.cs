@@ -61,10 +61,16 @@ namespace SerialSysInfo
             foreach (string metric in data)
             {
                 dataToSend += metric + "|";
-                if (data[data.Count - 1] == metric)
-                {
-                    dataToSend += "\n";
-                }
+            }
+
+            // Apply blank on sleep data
+            if (Properties.Settings.Default.stopOnSleep)
+            {
+                dataToSend += "1\n";
+            }
+            else // Computer is not asleep or blank on sleep is disabled
+            {
+                dataToSend += "0\n";
             }
 
             // Send the data

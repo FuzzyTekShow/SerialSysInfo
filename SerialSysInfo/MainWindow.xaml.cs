@@ -51,6 +51,7 @@ namespace SerialSysInfo
             cbStartMinim.IsChecked = Settings.StartMinimized;
             cbStartWithWindows.IsChecked = Settings.StartOnBoot;
             cbStartSerial.IsChecked = Settings.StartSerialOnLoad;
+            //cbStopWithSleep.IsChecked = Settings.StopOnSleep;
 
             if (Settings.StartMinimized)
             {
@@ -145,7 +146,6 @@ namespace SerialSysInfo
             // Reset the connection button text
             btnStartStop.Content = "Start sending serial data";
         }
-
 
         private void UpdateGUI()
         {
@@ -279,7 +279,7 @@ namespace SerialSysInfo
             Settings.SaveSettings(cbPortSelection.Text,
                 int.Parse(tbBaudSelection.Text), int.Parse(tbUpdateFrequency.Text),
                 (bool)cbGUIUpdateData.IsChecked, (bool)cbStartWithWindows.IsChecked,
-                (bool)cbStartMinim.IsChecked, (bool)cbStartSerial.IsChecked);
+                (bool)cbStartMinim.IsChecked, (bool)cbStartSerial.IsChecked, false); // (bool)cbStopWithSleep.IsChecked
 
             // Set the GUI data to blank if not to be shown
             if (!Settings.UpdateGUI)

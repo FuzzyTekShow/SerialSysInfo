@@ -92,7 +92,12 @@
                         <CheckBox x:Name="cbStartSerial" HorizontalAlignment="Center" Margin="4"
                                   Content="Start serial on load"/>
                     </StackPanel>
-
+                    <!-- TODO: Finish stop on sleep stuff, maybe. 
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <CheckBox x:Name="cbStopWithSleep" HorizontalAlignment="Center" Margin="4"
+                              Content="Stop sending data when the computer sleeps"/>
+                    </StackPanel>
+                    -->
                 </StackPanel>
             </GroupBox>
         

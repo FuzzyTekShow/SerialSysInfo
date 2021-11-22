@@ -17,6 +17,7 @@ namespace SerialSysInfo
         public static bool StartOnBoot { get; private set; }
         public static bool StartMinimized { get; private set; }
         public static bool StartSerialOnLoad { get; private set; }
+        public static bool StopOnSleep { get; private set; }
 
         // Shortcut stuff
         private static readonly string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
@@ -33,7 +34,7 @@ namespace SerialSysInfo
         /// <param name="startOnBoot"></param>
         /// <param name="startMinimized"></param>
         /// <param name="startSerialOnLoad"></param>
-        public static void SaveSettings(string port, int baud, int updateFrequency, bool updateGUI, bool startOnBoot, bool startMinimized, bool startSerialOnLoad)
+        public static void SaveSettings(string port, int baud, int updateFrequency, bool updateGUI, bool startOnBoot, bool startMinimized, bool startSerialOnLoad, bool stopOnSleep)
         {
             Port = port;
             Baud = baud;
@@ -42,6 +43,7 @@ namespace SerialSysInfo
             StartOnBoot = startOnBoot;
             StartMinimized = startMinimized;
             StartSerialOnLoad = startSerialOnLoad;
+            StopOnSleep = stopOnSleep;
 
             // Set and save the settings
             Properties.Settings.Default.port = Port;
@@ -51,10 +53,11 @@ namespace SerialSysInfo
             Properties.Settings.Default.startMinim = StartMinimized;
             Properties.Settings.Default.startOnBoot = StartOnBoot;
             Properties.Settings.Default.startSerialOnLoad = StartSerialOnLoad;
+            Properties.Settings.Default.stopOnSleep = StopOnSleep;
 
             Properties.Settings.Default.Save();
         }
-
+        
 
         /// <summary>
         /// Start the software at windows boot
@@ -95,6 +98,7 @@ namespace SerialSysInfo
             StartMinimized = Properties.Settings.Default.startMinim;
             StartOnBoot = Properties.Settings.Default.startOnBoot;
             StartSerialOnLoad = Properties.Settings.Default.startSerialOnLoad;
+            StopOnSleep = Properties.Settings.Default.stopOnSleep;
         }
 
 

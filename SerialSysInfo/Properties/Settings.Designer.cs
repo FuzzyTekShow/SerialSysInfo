@@ -106,5 +106,17 @@ namespace SerialSysInfo.Properties {
                 this["startSerialOnLoad"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool stopOnSleep {
+            get {
+                return ((bool)(this["stopOnSleep"]));
+            }
+            set {
+                this["stopOnSleep"] = value;
+            }
+        }
     }
 }
