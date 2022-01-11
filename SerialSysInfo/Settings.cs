@@ -1,9 +1,7 @@
 ﻿using Microsoft.Win32.TaskScheduler;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
 namespace SerialSysInfo
