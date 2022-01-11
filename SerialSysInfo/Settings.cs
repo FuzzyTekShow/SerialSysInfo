@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32.TaskScheduler;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -64,15 +65,27 @@ namespace SerialSysInfo
         /// </summary>
         public static void EnableStartOnBoot()
         {
-            IShellLink link = (IShellLink)new ShellLink();
+            Task task = TaskService.Instance.GetTask("SerialSysInfo");
 
-            // Shortcut information
-            link.SetDescription("SerialSysInfo");
-            link.SetPath($"{app}");
-
-            // save it
-            IPersistFile file = (IPersistFile)link;
-            file.Save(Path.Combine(startupFolder, "SerialSysInfo.lnk"), false);
+            if (task == null)
+            {
+                // Task doesn't exist so create it
+                TaskService ts = new TaskService();
+                TaskDefinition td = ts.NewTask();
+                // Get the EXE path
+                ExecAction exe = new ExecAction(Assembly.GetExecutingAssembly().Location);
+                td.Actions.Add(exe);
+                // Run as an admin
+                td.Principal.RunLevel = TaskRunLevel.Highest;
+                // Task description
+                td.RegistrationInfo.Description = "Launches SerialSysInfo at logon";
+                // Start at logon of user
+                td.Triggers.AddNew(TaskTriggerType.Logon);
+                // Create the task and enable it
+                task = ts.RootFolder.RegisterTaskDefinition("SerialSysInfo", td);
+                task.Enabled = true;
+            }
+            else { task.Enabled = true; }
         }
 
 
@@ -81,11 +94,14 @@ namespace SerialSysInfo
         /// </summary>
         public static void DisableStartOnBoot()
         {
-            // Check the shortcut exists, if so - delete it
-            if (File.Exists($"{startupFolder}\\SerialSysInfo.lnk"))
+            Task task = TaskService.Instance.GetTask("SerialSysInfo");
+
+            // Check the task exists and delete it if so
+            if (task != null)
             {
-                File.Delete($"{startupFolder}\\SerialSysInfo.lnk");
+                TaskService.Instance.RootFolder.DeleteTask(task.Name);
             }
+            
         }
 
 

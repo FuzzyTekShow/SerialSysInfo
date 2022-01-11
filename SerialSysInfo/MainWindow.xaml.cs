@@ -17,8 +17,6 @@ namespace SerialSysInfo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly string version = $"v{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
-        private readonly string websiteLink = "https://github.com/fuzzytekshow/serialsysinfo";
         private TaskbarIcon tbi;
         private MetricData md;
         private BackgroundWorker serialWorker;
@@ -29,12 +27,38 @@ namespace SerialSysInfo
         public MainWindow()
         {
             InitializeComponent();
+
+            // Check if already running
+            if (IsAlreadyRunning())
+            {
+                _ = MessageBox.Show("SerialSysInfo is already running.", "Already Running",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Stop);
+                Close();
+            }
+
             InitSettings();
             InitTrayIcon();
             InitSerialPorts();
             InitMetrics();
+
+            // Run any applied settings
+            if (Settings.StartSerialOnLoad)
+            {
+                StartSerialConnection();
+            }
+
+            if (Settings.StartMinimized)
+            {
+                Hide();
+            }
         }
 
+
+        private bool IsAlreadyRunning()
+        {
+            return Process.GetProcessesByName("SerialSysInfo").Length > 1;
+        }
 
         /// <summary>
         /// Gets any user saved settings on run
@@ -52,16 +76,6 @@ namespace SerialSysInfo
             cbStartWithWindows.IsChecked = Settings.StartOnBoot;
             cbStartSerial.IsChecked = Settings.StartSerialOnLoad;
             //cbStopWithSleep.IsChecked = Settings.StopOnSleep;
-
-            if (Settings.StartMinimized)
-            {
-                Hide();
-            }
-
-            if (Settings.StartSerialOnLoad)
-            {
-                StartSerialConnection();
-            }
         }
 
 
@@ -347,6 +361,8 @@ namespace SerialSysInfo
         }
 
 
+
+
         #endregion
 
         #region Misc Methods
@@ -446,10 +462,10 @@ namespace SerialSysInfo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
             // If normal window, ask if sure
-            if (WindowState == WindowState.Normal)
+            if (!IsAlreadyRunning() && WindowState == WindowState.Normal)
             {
                 MessageBoxResult result = MessageBox.Show("Are you sure you want to exit?", "Exit Application", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
@@ -461,9 +477,6 @@ namespace SerialSysInfo
             // Make sure the serial port is closed
             SerialSender.Disconnect();
         }
-
-        #endregion
-
 
         /// <summary>
         /// Called when the "About" menu item is clicked
@@ -486,5 +499,8 @@ namespace SerialSysInfo
         {
             ShowHelp();
         }
+
+        #endregion
+
     }
 }

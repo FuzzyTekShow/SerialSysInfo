@@ -25,7 +25,7 @@ namespace SerialSysInfo
         /// <param name="e"></param>
         private void btnOK_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
 
